@@ -145,20 +145,20 @@ def channel_details(channel_id):
     
 #insert to mysql
 
-connection = mysql.connector.connect(host="localhost",user="root",password="12345",database="test_youtube")
+connection = mysql.connector.connect(host="localhost",user="root",password="",database="youtube_youtube")
 mycursor=connection.cursor()
 
 #getting table for channel details
 
 def Channel_table():
-    connection = mysql.connector.connect(host="localhost",user="root",password="12345",database="test_youtube")
+    connection = mysql.connector.connect(host="localhost",user="root",password="",database="youtube_youtube")
     mycursor=connection.cursor()
     
     drop_query='drop table if exists Channels'
     mycursor.execute(drop_query)
     connection.commit()
     try:
-        query='create table Channels(Channel_Name varchar(100),Channel_Id varchar(80) primary key,Subscribers bigint,Views bigint,Total_Videos int,Channel_description text,Playlist_Id varchar(80) )'
+        query='create table Channels(ID INT AUTO_INCREMENT PRIMARY KEY,Channel_Name varchar(100),Channel_Id varchar(80),Subscribers bigint,Views bigint,Total_Videos int,Channel_description text,Playlist_Id varchar(80) )'
         mycursor.execute(query)
         connection.commit()
     
@@ -186,7 +186,7 @@ def Channel_table():
 #getting table for video details
 
 def video_table():
-    connection = mysql.connector.connect(host="localhost", user="root", password="12345", database="test_youtube")
+    connection = mysql.connector.connect(host="localhost", user="root", password="", database="youtube_youtube")
     mycursor = connection.cursor()
     
     # Drop the existing table if it exists
@@ -196,10 +196,10 @@ def video_table():
     
     # Create the new table structure with the desired changes
     query = '''
-    CREATE TABLE Videos (
+    CREATE TABLE Videos (ID INT AUTO_INCREMENT PRIMARY KEY,
         Channel_Name VARCHAR(100),
         Channel_Id VARCHAR(100),
-        video_Id VARCHAR(30) PRIMARY KEY,
+        video_Id VARCHAR(30),
         Title VARCHAR(150),
         Thumbnail VARCHAR(200),
         Description TEXT,
@@ -245,18 +245,17 @@ def video_table():
         except mysql.connector.IntegrityError as e:
             print(f"Skipping duplicate entry for video_Id: {row['video_Id']}")
 
-
 # getting table for comment details
 
 def comments_table():
-    connection = mysql.connector.connect(host="localhost",user="root",password="12345",database="test_youtube")
+    connection = mysql.connector.connect(host="localhost",user="root",password="",database="youtube_youtube")
     mycursor=connection.cursor()
     
     drop_query='drop table if exists Comments'
     mycursor.execute(drop_query)
     connection.commit()
     
-    query='create table Comments(Comment_Id varchar(100) primary key,Video_Id varchar(50),Comment_Text text,Comment_Author varchar(150),Comment_Published timestamp)'
+    query='create table Comments(ID INT AUTO_INCREMENT PRIMARY KEY,Comment_Id varchar(100),Video_Id varchar(50),Comment_Text text,Comment_Author varchar(150),Comment_Published timestamp)'
     mycursor.execute(query)
     connection.commit()
     
@@ -270,7 +269,7 @@ def comments_table():
     
     
     
-    connection = mysql.connector.connect(host="localhost", user="root", password="12345", database="test_youtube")
+    connection = mysql.connector.connect(host="localhost", user="root", password="", database="youtube_youtube")
     mycursor = connection.cursor()
     
     for index, row in df2.iterrows():
@@ -383,22 +382,21 @@ elif show_table=='COMMENTS':
 
 
 
-connection = mysql.connector.connect(host="localhost",user="root",password="12345",database="test_youtube")
+connection = mysql.connector.connect(host="localhost",user="root",password="",database="youtube_youtube")
 mycursor=connection.cursor()
 
-question=st.selectbox(':green[Select Your Question]',('1. What are the names of all the videos and their corresponding channels?',
-                                              '2. Which channels have the most number of videos?',
-                                              '3. What are the top 10 most viewed videos and their respective channels?',
-                                              '4. How many comments were made on each video, and what are their corresponding video names?',
-                                              '5. Which videos have the highest number of likes, and what are their corresponding channel names?',
-                                              '6. What is the total number of likes and what are their corresponding video names?',
-                                              '7. What is the total number of views for each channel, and what are their corresponding channel names?',
-                                              '8. What are the names of all the channels that have published videos in the year 2022?',
-                                              '9. What is the average duration of all videos in each channel, and what are their corresponding channel names?',
-                                              '10. Which videos have the highest number of comments, and what are their corresponding channel names?'))
+question=st.selectbox(':green[Select Your Question]',(' What are the names of all the videos and their corresponding channels?',
+                                              ' Which channels have the most number of videos?',
+                                              ' What are the top 10 most viewed videos and their respective channels?',
+                                              ' How many comments were made on each video, and what are their corresponding video names?',
+                                              ' Which videos have the highest number of likes, and what are their corresponding channel names?',
+                                              ' What is the total number of likes and what are their corresponding video names?',
+                                              ' What is the total number of views for each channel, and what are their corresponding channel names?',
+                                              ' What are the names of all the channels that have published videos in the year 2022?',
+                                              ' Which videos have the highest number of comments, and what are their corresponding channel names?'))
 
 
-if question=='1. What are the names of all the videos and their corresponding channels?':
+if question==' What are the names of all the videos and their corresponding channels?':
     query1='''select title as videos,channel_name as channelname from Videos'''
     mycursor.execute(query1)
     t1=mycursor.fetchall()
@@ -406,7 +404,7 @@ if question=='1. What are the names of all the videos and their corresponding ch
     st.write(df)
 
 
-elif question=='2. Which channels have the most number of videos?':
+elif question==' Which channels have the most number of videos?':
     query2='''select channel_name as channelname,total_videos as no_videos from Channels 
                 order by total_videos desc'''
     mycursor.execute(query2)
@@ -415,7 +413,7 @@ elif question=='2. Which channels have the most number of videos?':
     st.write(df2) 
 
 
-elif question=='3. What are the top 10 most viewed videos and their respective channels?':
+elif question==' What are the top 10 most viewed videos and their respective channels?':
     query3='''select views as views,channel_name as channelname,title as videotitle from Videos 
                 where views is not null order by views desc limit 10'''
     mycursor.execute(query3)
@@ -425,7 +423,7 @@ elif question=='3. What are the top 10 most viewed videos and their respective c
 
 
 
-elif question=='4. How many comments were made on each video, and what are their corresponding video names?':
+elif question==' How many comments were made on each video, and what are their corresponding video names?':
     query4='''select comments as no_comments,title as videotitle from videos where comments is not null'''
     mycursor.execute(query4)
     t4=mycursor.fetchall()
@@ -433,7 +431,7 @@ elif question=='4. How many comments were made on each video, and what are their
     st.write(df4) 
 
  
-elif question=='5. Which videos have the highest number of likes, and what are their corresponding channel names?':
+elif question==' Which videos have the highest number of likes, and what are their corresponding channel names?':
     query5='''select title as videotitle,channel_name as channelname,likes as likescount from videos where likes is not null
                 order by likes desc'''
     mycursor.execute(query5)
@@ -442,7 +440,7 @@ elif question=='5. Which videos have the highest number of likes, and what are t
     st.write(df5)
 
 
-elif question=='6. What is the total number of likes and what are their corresponding video names?':
+elif question==' What is the total number of likes and what are their corresponding video names?':
     query6='''select likes as likescount,title as videotitle from videos'''
     mycursor.execute(query6)
     t6=mycursor.fetchall()
@@ -450,7 +448,7 @@ elif question=='6. What is the total number of likes and what are their correspo
     st.write(df6)  
 
 
-elif question=='7. What is the total number of views for each channel, and what are their corresponding channel names?':
+elif question==' What is the total number of views for each channel, and what are their corresponding channel names?':
     query7='''select channel_name as channelname,views as totalviews from Channels'''
     mycursor.execute(query7)
     t7=mycursor.fetchall()
@@ -459,7 +457,7 @@ elif question=='7. What is the total number of views for each channel, and what 
 
 
 
-elif question=='8. What are the names of all the channels that have published videos in the year 2022?':
+elif question==' What are the names of all the channels that have published videos in the year 2022?':
     query8='''select title as video_title,published_date as videorelease,channel_name as channelname from videos 
                 where extract(year from published_date)=2022'''
     mycursor.execute(query8)
@@ -469,7 +467,7 @@ elif question=='8. What are the names of all the channels that have published vi
 
 
 
-elif question=='10. Which videos have the highest number of comments, and what are their corresponding channel names?':
+elif question==' Which videos have the highest number of comments, and what are their corresponding channel names?':
     query10='''select title as videotitle,channel_name as channelname,comments as comments from videos where comments
                 is not null order by comments desc'''
     mycursor.execute(query10)
@@ -477,7 +475,6 @@ elif question=='10. Which videos have the highest number of comments, and what a
     df10=pd.DataFrame(t10,columns=['videotitle','channelname','comments'])
     st.write(df10)
     
-
 
 
 
